@@ -44,18 +44,18 @@ app.get("/scrape", function(req, res) {
     // Then, we load that into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(response.data);
 
-    
+    var result = {};
 
     // Now, we grab every h2 within an article tag, and do the following:
-    $("p.title").each(function(i, element) {
-      var result = {};
-      var title = $(element).text();
-      var link = $(element).children().attr("href");
+    $(".top-matter").each(function(i, element) {
+      
+      var title = $(element).find("p.title").text();
+      var link = $(element).find("p.title").children().attr("href");
       result.title = title;
       result.link = link;
+      var author = $(element).find("p.tagline").find("a.author").text();
+      result.author = author;
       console.log(result);
-
-      // Create a new Article using the `result` object built from scraping
       db.Article.create(result)
         .then(function(dbArticle) {
           // View the added result in the console
@@ -66,6 +66,16 @@ app.get("/scrape", function(req, res) {
           console.log(err);
         });
     });
+    // $("a.author").each(function(i, element) {
+      
+    //   var author = $(element).text();
+    //   result.author = author;
+    // });
+
+
+      // Create a new Article using the `result` object built from scraping
+      
+   
     
 
     // Send a message to the client
@@ -87,6 +97,19 @@ app.get("/articles", function(req, res) {
     });
 });
 
+app.get("/notes", function(req, res) {
+  // Grab every document in the Articles collection
+  db.Note.find({})
+    .then(function(dbNote) {
+      // If we were able to successfully find Articles, send them back to the client
+      res.json(dbNote);
+    })
+    .catch(function(err) {
+      // If an error occurred, send it to the client
+      res.json(err);
+    });
+});
+
 // Route for grabbing a specific Article by id, populate it with it's note
 app.get("/articles/:id", function(req, res) {
   // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
@@ -96,6 +119,20 @@ app.get("/articles/:id", function(req, res) {
     .then(function(dbArticle) {
       // If we were able to successfully find an Article with the given id, send it back to the client
       res.json(dbArticle);
+    })
+    .catch(function(err) {
+      // If an error occurred, send it to the client
+      res.json(err);
+    });
+});
+
+app.get("/notes/:id", function(req, res) {
+  // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
+  db.Note.findOne({ _id: req.params.id })
+    // ..and populate all of the notes associated with i
+    .then(function(dbNote) {
+      // If we were able to successfully find an Article with the given id, send it back to the client
+      res.json(dbNote);
     })
     .catch(function(err) {
       // If an error occurred, send it to the client

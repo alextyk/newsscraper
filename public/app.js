@@ -1,12 +1,47 @@
-// Grab the articles as a json
-$.getJSON("/articles", function(data) {
-    // For each one
-    for (var i = 0; i < data.length; i++) {
-      // Display the apropos information on the page
-      $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
+
+ var articleId;
+ var noteId;
+  function renderArticles() {
+    $.getJSON("/articles", function(data) {
+      
+      for (i = 0; i < data.length; i++) {
+        articleId = data[i]._id;
+        noteId = data[i].note;
+        // Show the article 
+
+        $("#articles").append("<p data-id='" + data[i]._id + "'> TITLE: " + data[i].title + "<br />AUTHOR: " + data[i].author + "<br />LINK: " + data[i].link + "</p>");
+        renderNotes(articleId);
     }
+  }); 
+} 
+  function renderNotes(id) {
+    if (noteId.length) {
+      // Loop through each note
+      for(j=0; j < noteId.length; j++) {
+
+        // Append a link to the note, against the article
+        $.getJSON("/notes/" + noteId[j], function(result) {
+          console.log("[data-id=" + id + "]");
+          $("[data-id=" + id + "]").append("<br> COMMENT: " + result.body + "  <button type='button'>Delete</button>");
+        }); 
+      }
+      
+    }
+
+  } 
+
+  renderArticles();
+ 
+
+  $(document).on("click", "button", function() {
+    // DELETE ROUTE
+
+    renderNotes(this.id)
   });
   
+
+  
+
   
   // Whenever someone clicks a p tag
   $(document).on("click", "p", function() {
