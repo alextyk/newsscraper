@@ -160,6 +160,23 @@ app.post("/articles/:id", function(req, res) {
     });
 });
 
+app.delete("/notes/:id", function (req, res) {
+
+  db.Note.findOneAndDelete({_id: req.params.id})
+  .then(function(dbNote) {
+    // If we were able to successfully find an Article with the given id, send it back to the client
+    res.json(dbNote);
+  })
+  .catch(function(err) {
+    // If an error occurred, send it to the client
+    res.json(err);
+  });
+
+
+});
+
+
+
 // Start the server
 app.listen(PORT, function() {
   console.log("App running on port " + PORT + "!");

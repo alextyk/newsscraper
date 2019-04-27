@@ -1,3 +1,5 @@
+$(document).ready( function () {
+
 
  var articleId;
  var noteId;
@@ -16,14 +18,18 @@
 } 
   function renderNotes(id) {
     if (noteId.length) {
-      // Loop through each note
+
       for(j=0; j < noteId.length; j++) {
 
         // Append a link to the note, against the article
         $.getJSON("/notes/" + noteId[j], function(result) {
-          console.log("[data-id=" + id + "]");
-          $("[data-id=" + id + "]").append("<br> COMMENT: " + result.body + "  <button type='button'>Delete</button>");
-        }); 
+
+          if (result !== null) {
+          
+          console.log(result)
+          $("[data-id=" + id + "]").append("<br> COMMENT: " + result.body + "  <button note-id='" + result._id +"' type='button'>Delete</button>");
+        }
+      });
       }
       
     }
@@ -36,12 +42,27 @@
   $(document).on("click", "button", function() {
     // DELETE ROUTE
 
-    renderNotes(this.id)
+    var thisId = $(this).attr("note-id");
+    
+    
+
+
+  
+    
+
+    $.ajax({
+      method: "DELETE",
+      url: "/notes/" + thisId
+    })
+      // With that done, add the note information to the page
+      .then(function(data) {
+        console.log(data);
+        renderArticles();
+        location.reload();
+        
+      });
+      
   });
-  
-
-  
-
   
   // Whenever someone clicks a p tag
   $(document).on("click", "p", function() {
@@ -105,3 +126,4 @@
     $("#titleinput").val("");
     $("#bodyinput").val("");
   });
+});
