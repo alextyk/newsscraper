@@ -36,9 +36,9 @@ mongoose.connect(MONGODB_URI);
 // mongoose.connect("mongodb://localhost/unit18Populater", { useNewUrlParser: true });
 
 // Routes
-app.get('/', function (req, res) {
-  res.send('GET request to the homepage')
-})
+// app.get('/', function (req, res) {
+//   res.send('GET request to the homepage')
+// })
 // A GET route for scraping the echoJS website
 app.get("/scrape", function(req, res) {
   // First, we grab the body of the html with axios
